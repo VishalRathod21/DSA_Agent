@@ -18,7 +18,11 @@ if 'current_problem' not in st.session_state:
 if 'show_code_editor' not in st.session_state:
     st.session_state.show_code_editor = False
 if 'api_key' not in st.session_state:
-    st.session_state.api_key = ''
+    # Try to get API key from environment variables first
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    st.session_state.api_key = os.getenv('GEMINI_API_KEY', '')
 
 # Page configuration
 st.set_page_config(
