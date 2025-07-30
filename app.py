@@ -17,13 +17,39 @@ if 'current_problem' not in st.session_state:
     st.session_state.current_problem = ''
 if 'show_code_editor' not in st.session_state:
     st.session_state.show_code_editor = False
+if 'api_key' not in st.session_state:
+    st.session_state.api_key = ''
 
 # Page configuration
 st.set_page_config(
     page_title="AlgoMentor AI - Your Personal DSA Guide",
-    page_icon="📊",
+    page_icon="🔑",
     layout="wide"
 )
+
+# Sidebar for API Key input
+with st.sidebar:
+    st.title("🔑 API Key Setup")
+    api_key = st.text_input(
+        "Enter your Gemini API Key",
+        type="password",
+        placeholder="sk-...",
+        help="Get your API key from https://makersuite.google.com/app/apikey"
+    )
+    
+    if api_key:
+        st.session_state.api_key = api_key
+        st.success("✅ API Key saved!")
+        
+    st.markdown("---")
+    st.markdown("### How to get your API key:")
+    st.markdown("1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)")
+    st.markdown("2. Sign in with your Google account")
+    st.markdown("3. Click on 'Create API key'")
+    st.markdown("4. Copy and paste the key above")
+    
+    if not st.session_state.get('api_key'):
+        st.warning("⚠️ Please enter your Gemini API key to continue")
 
 # Custom CSS for better styling
 st.markdown("""

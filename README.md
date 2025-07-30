@@ -37,10 +37,16 @@ DSA Solver Pro is an AI-powered platform designed to help you master Data Struct
 ## 🚀 Getting Started
 
 1. **Set up your environment variables**:
-   Create a `.env` file in the root directory and add your OpenAI API key:
+   Create a `.env` file in the root directory and add your Gemini API key:
    ```
-   OPENAI_API_KEY=your_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
    ```
+   
+   To get your Gemini API key:
+   1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   2. Sign in with your Google account
+   3. Click on "Create API key"
+   4. Copy the API key and paste it in the `.env` file
 
 2. **Run the application**:
    ```bash
