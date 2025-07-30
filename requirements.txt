@@ -1,15 +1,23 @@
-autogen-agentchat
-autogen-core
-autogen_ext
-asyncio
-dotenv
-openai
-tiktoken
-autogen-ext[docker]
-streamlit>=1.24.0
-streamlit-ace>=0.1.1
-matplotlib>=3.7.0
-networkx>=3.0
-numpy>=1.24.0
-pandas>=2.0.0
-plotly>=5.13.0
+# Core Dependencies
+python-dotenv==1.0.0
+numpy==1.24.3
+pandas==2.0.3
+matplotlib==3.7.1
+networkx==3.1
+plotly==5.13.0
+
+# Streamlit
+streamlit==1.24.0
+streamlit-ace==0.1.1
+
+# AI/ML
+openai==0.28.0
+tiktoken==0.4.0
+
+# AutoGen
+autogen-agentchat==0.1.0
+autogen-core==0.1.0
+autogen-ext[docker]==0.1.0
+
+# Async
+asyncio==3.4.3

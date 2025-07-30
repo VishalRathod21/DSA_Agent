@@ -17,13 +17,34 @@ DSA Solver Pro is an AI-powered platform designed to help you master Data Struct
 
 ## 🛠️ Installation
 
+### Option 1: Using setup script (Recommended)
+
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/dsasolverpro.git
-   cd dsasolverpro
+   git clone https://github.com/VishalRathod21/DSA_Agent.git
+   cd DSA_Agent
    ```
 
-2. **Create and activate a virtual environment (recommended)**:
+2. **Make the setup script executable and run it**:
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+
+3. **Activate the virtual environment**:
+   ```bash
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+
+### Option 2: Manual Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/VishalRathod21/DSA_Agent.git
+   cd DSA_Agent
+   ```
+
+2. **Create and activate a virtual environment**:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
@@ -31,6 +52,7 @@ DSA Solver Pro is an AI-powered platform designed to help you master Data Struct
 
 3. **Install dependencies**:
    ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
