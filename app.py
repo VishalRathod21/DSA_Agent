@@ -3,7 +3,6 @@ import asyncio
 import time
 import os
 from dotenv import load_dotenv
-from streamlit_ace import st_ace
 from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.base import TaskResult
 from utils.problem_templates import PROBLEM_CATEGORIES, get_problem_template
@@ -155,15 +154,12 @@ with col2:
 # Code Editor Section
 if st.session_state.get('show_code_editor', False):
     st.markdown("### Code Editor")
-    code = st_ace(
-        language='python',
-        theme='monokai',
-        font_size=14,
-        tab_size=4,
-        show_gutter=True,
+    code = st.text_area(
+        'Enter your Python code here',
+        height=300,
         key='code_editor',
-        value='# Write your solution here\ndef solution():\n    pass',
-        height=300
+        help='Write or paste your Python code here',
+        placeholder='def solve():\n    # Your solution here\n    pass'
     )
     
     col1, col2 = st.columns(2)
