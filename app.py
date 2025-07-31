@@ -97,59 +97,38 @@ with st.sidebar:
     st.markdown("3. View the step-by-step solution")
 
 # Main content
-col1, col2 = st.columns([2, 1])
+st.title("AlgoMentor AI")
+st.markdown("### Your Personal DSA Guide")
 
+# Problem input area
+st.markdown("### Enter Your Problem")
+problem = st.text_area(
+    "Describe your problem:",
+    height=150,
+    key="problem_input",
+    value=st.session_state.get('current_problem', ''),
+    placeholder="Enter your problem statement here..."
+)
+
+if problem:
+    st.session_state.current_problem = problem
+    
+# Solution display area
+if st.session_state.get('solutions'):
+    st.markdown("---")
+    st.markdown("### Latest Solution")
+    latest_solution = st.session_state.solutions[-1]
+    st.code(latest_solution['code'], language='python')
+
+# Quick Actions
+col1, col2 = st.columns(2)
 with col1:
-    st.title("AlgoMentor AI")
-    st.markdown("### Your Personal DSA Guide")
-    
-    # Problem category selection
-    selected_category = st.selectbox(
-        'Select Problem Category',
-        ['-- Select a category --'] + list(PROBLEM_CATEGORIES.keys())
-    )
-    
-    # Problem selection based on category
-    problem_options = []
-    if selected_category != '-- Select a category --':
-        problem_options = PROBLEM_CATEGORIES[selected_category]
-    
-    selected_problem = st.selectbox(
-        'Or select a common problem',
-        ['-- Select a problem --'] + problem_options
-    )
-    
-    # Get problem template if a common problem is selected
-    if selected_problem != '-- Select a problem --':
-        template = get_problem_template(selected_problem)
-        st.session_state.current_problem = selected_problem
-        st.markdown(f"**Description:** {template['description']}")
-        st.markdown(f"**Example:**\n```\n{template['example']}\n```")
-        st.markdown("**Constraints:**")
-        for constraint in template['constraints']:
-            st.markdown(f"- {constraint}")
-        
-        task = st.text_area(
-            "Or describe your own problem:",
-            value=template['description'],
-            height=100,
-            help="Modify the problem statement as needed"
-        )
-    else:
-        task = st.text_area(
-            "Describe your DSA problem:",
-            value='',
-            height=150,
-            help="Be as specific as possible for better assistance"
-        )
-
-with col2:
-    st.markdown("### Quick Actions")
     if st.button("📋 View Solution History", use_container_width=True):
         st.session_state.show_solution_history = True
-    
+
+with col2:
     if st.button("📝 Open Code Editor", use_container_width=True):
-        st.session_state.show_code_editor = not st.session_state.show_code_editor
+        st.session_state.show_code_editor = not st.session_state.get('show_code_editor', False)
 
 # Code Editor Section
 if st.session_state.get('show_code_editor', False):
@@ -194,7 +173,6 @@ async def run(team,docker,task):
         yield f"Error: {e}"
     finally:
         await stop_docker_container(docker)
-
 
 # Add some spacing
 st.markdown("---")
