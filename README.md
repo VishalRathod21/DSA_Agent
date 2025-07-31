@@ -1,111 +1,122 @@
-# DSA Solver Pro
+# 🧠 DSA Solver Pro
 
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)](https://streamlit.io/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-DSA Solver Pro is an AI-powered platform designed to help you master Data Structures and Algorithms through interactive problem-solving and visualization. The application provides a guided learning experience with real-time code execution, complexity analysis, and step-by-step explanations.
+DSA Solver Pro is an intelligent platform that helps you master Data Structures and Algorithms through AI-powered problem solving. It provides step-by-step solutions, code execution in a secure Docker environment, and detailed complexity analysis using Google's Gemini AI.
 
-## 🚀 Features
+## ✨ Features
 
-- **Interactive Problem Solving**: Get AI-assisted solutions to DSA problems
-- **Visual Learning**: Visualize algorithms and data structures in action
-- **Code Editor**: Built-in code editor with syntax highlighting
-- **Complexity Analysis**: Understand time and space complexity of solutions
-- **Multiple Problem Categories**: Covers various DSA topics and difficulty levels
-- **Real-time Feedback**: Get instant feedback on your solutions
+- **AI-Powered Solutions**: Get detailed, step-by-step solutions to DSA problems
+- **Safe Code Execution**: Run and test code in an isolated Docker container
+- **Interactive Interface**: User-friendly web interface built with Streamlit
+- **Code Editor**: Built-in editor for writing and testing solutions
+- **Solution History**: Track and revisit your previous solutions
+- **Complexity Analysis**: Understand time and space complexity of algorithms
 
-## 🛠️ Installation
+## 🛠️ Prerequisites
 
-### Option 1: Using setup script (Recommended)
+- Python 3.8 or higher
+- Docker (for code execution sandbox)
+- Google Gemini API key (Get it from [Google AI Studio](https://makersuite.google.com/app/apikey))
 
-1. **Clone the repository**:
+## 🚀 Quick Start
+
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/VishalRathod21/DSA_Agent.git
-   cd DSA_Agent
+   git clone https://github.com/yourusername/dsasolverpro.git
+   cd dsasolverpro
    ```
 
-2. **Make the setup script executable and run it**:
-   ```bash
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-
-3. **Activate the virtual environment**:
-   ```bash
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-
-### Option 2: Manual Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/VishalRathod21/DSA_Agent.git
-   cd DSA_Agent
-   ```
-
-2. **Create and activate a virtual environment**:
+2. **Set up a virtual environment**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**:
+3. **Install dependencies**
    ```bash
-   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
-## 🚀 Getting Started
-
-1. **Set up your environment variables**:
-   Create a `.env` file in the root directory and add your Gemini API key:
+4. **Configure environment variables**
+   Create a `.env` file in the project root:
+   ```env
+   GEMINI_API_KEY=your_api_key_here
    ```
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-   
-   To get your Gemini API key:
-   1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-   2. Sign in with your Google account
-   3. Click on "Create API key"
-   4. Copy the API key and paste it in the `.env` file
 
-2. **Run the application**:
+5. **Start Docker**
+   Make sure Docker is running on your system.
+
+6. **Run the application**
    ```bash
    streamlit run app.py
    ```
 
-3. **Open your browser** and navigate to `http://localhost:8501`
+## 🏗️ Project Structure
 
-## 🧩 Features in Detail
+```
+dsasolverpro/
+├── agents/                  # AI agent implementations
+│   ├── code_executor_agent.py  # Handles code execution in Docker
+│   └── problem_solver.py      # Generates DSA solutions using AI
+├── config/                  # Configuration files
+│   ├── constant.py          # Application constants
+│   ├── docker_executor.py   # Docker execution setup
+│   ├── docker_utils.py      # Docker utilities
+│   └── settings.py          # Application settings
+├── team/                    # Team configuration
+│   └── dsa_team.py          # Team setup for agents
+├── app.py                   # Main Streamlit application
+├── requirements.txt         # Python dependencies
+└── README.md               # This file
+```
 
-### 📊 Interactive Problem Solving
-- Select from various problem categories
-- Get step-by-step explanations
-- View optimized solutions
+## 🤖 How It Works
+
+1. **Problem Input**: Users enter a DSA problem or question
+2. **AI Processing**: The Problem Solver Agent processes the problem using Google's Gemini AI
+3. **Solution Generation**: The agent generates a step-by-step solution with code
+4. **Code Execution**: The Code Executor Agent runs the code in a secure Docker container
+5. **Result Display**: The solution, code, and execution results are displayed to the user
+
+## 🛠️ Configuration
+
+### Environment Variables
+- `GEMINI_API_KEY`: Your Google Gemini API key (required)
+
+### Settings
+- Model: `gemini-1.5-flash` (configurable in `config/constant.py`)
+- Maximum turns: 15 (configurable in `config/constant.py`)
+- Timeout: 120 seconds (configurable in `config/constant.py`)
+
+## 📚 Usage
+
+1. Enter your DSA problem in the text area
+2. Click "Generate Solution" to get an AI-powered solution
+3. Use the built-in code editor to modify and test the solution
+4. View the execution results and complexity analysis
+5. Save your solutions for future reference
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a new branch: `git checkout -b feature/your-feature`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/your-feature`
+5. Submit a pull request
 
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
+- [Google Gemini](https://ai.google.dev/) for the powerful AI capabilities
 - [Streamlit](https://streamlit.io/) for the amazing web framework
-- [OpenAI](https://openai.com/) for the powerful language models
-- The open-source community for their valuable contributions
-
----
-
-<div align="center">
-  Made with ❤️ by Your Name
-</div>
+- [Docker](https://www.docker.com/) for containerization
+- The open-source community for various libraries and tools
