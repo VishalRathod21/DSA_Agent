@@ -84,16 +84,6 @@ DSA Solver Pro is an AI-powered platform designed to help you master Data Struct
 - Get step-by-step explanations
 - View optimized solutions
 
-### 📈 Visualization Tools
-- Algorithm execution visualization
-- Data structure representations
-- Complexity analysis graphs
-
-### 🛠️ Code Editor
-- Syntax highlighting
-- Code execution
-- Real-time feedback
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
