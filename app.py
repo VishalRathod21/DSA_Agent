@@ -1,14 +1,13 @@
 import streamlit as st
-from team.dsa_team import get_dsa_team_and_docker
-from config.docker_utils import start_docker_container, stop_docker_container
+import asyncio
+import time
+import os
+from dotenv import load_dotenv
+from streamlit_ace import st_ace
 from autogen_agentchat.messages import TextMessage
 from autogen_agentchat.base import TaskResult
-import asyncio
-import json
-from utils.visualization import plot_time_complexity, visualize_graph, plot_sorting_visualization
 from utils.problem_templates import PROBLEM_CATEGORIES, get_problem_template
-from streamlit_ace import st_ace
-import time
+from config.docker_utils import start_docker_container, stop_docker_container
 
 # Initialize session state
 if 'solutions' not in st.session_state:
@@ -23,6 +22,7 @@ if 'api_key' not in st.session_state:
     from dotenv import load_dotenv
     load_dotenv()
     st.session_state.api_key = os.getenv('GEMINI_API_KEY', '')
+    st.session_state.agents_initialized = False
 
 # Page configuration
 st.set_page_config(
@@ -149,9 +149,6 @@ with col2:
     if st.button("📋 View Solution History", use_container_width=True):
         st.session_state.show_solution_history = True
     
-    if st.button("📊 Visualize Data Structure", use_container_width=True):
-        st.session_state.show_visualization = True
-    
     if st.button("📝 Open Code Editor", use_container_width=True):
         st.session_state.show_code_editor = not st.session_state.show_code_editor
 
@@ -184,47 +181,6 @@ if st.session_state.get('show_code_editor', False):
                 st.session_state.solutions.append(solution)
                 st.success("Solution saved to history!")
 
-# Visualization Section
-if st.session_state.get('show_visualization', False):
-    st.markdown("### Data Structure Visualization")
-    vis_type = st.selectbox(
-        'Select visualization type',
-        ['Graph', 'Time Complexity', 'Sorting']
-    )
-    
-    if vis_type == 'Graph':
-        st.markdown("Enter graph edges as tuples (e.g., (1,2), (2,3))")
-        graph_input = st.text_area("Graph Input", value="(1,2), (2,3), (3,4), (4,1)")
-        try:
-            edges = eval(f'[{graph_input}]')
-            fig = visualize_graph(edges)
-            st.pyplot(fig)
-        except Exception as e:
-            st.error(f"Invalid graph input: {e}")
-    
-    elif vis_type == 'Time Complexity':
-        st.markdown("Compare time complexities of different algorithms")
-        algo1 = st.text_input("Algorithm 1", "Bubble Sort")
-        time1 = st.text_input("Complexity (e.g., O(n^2))", "O(n^2)")
-        
-        algo2 = st.text_input("Algorithm 2", "Merge Sort")
-        time2 = st.text_input("Complexity (e.g., O(n log n))", "O(n log n)")
-        
-        if st.button("Compare"):
-            complexity_data = {algo1: time1, algo2: time2}
-            fig = plot_time_complexity(complexity_data)
-            st.pyplot(fig)
-    
-    elif vis_type == 'Sorting':
-        st.markdown("Visualize sorting algorithms")
-        array_input = st.text_area("Enter array (comma-separated)", "5,1,4,2,8,3,7,6")
-        try:
-            arr = [int(x.strip()) for x in array_input.split(',') if x.strip()]
-            if arr:
-                fig = plot_sorting_visualization(arr, "Sorting Visualization")
-                st.pyplot(fig)
-        except ValueError:
-            st.error("Please enter valid integers separated by commas")
 
 async def run(team,docker,task):
     try:
@@ -251,69 +207,84 @@ st.markdown("---")
 col1, col2 = st.columns([1, 2])
 with col1:
     if st.button("🚀 Generate Solution", use_container_width=True, type="primary"):
-        # Clear previous messages
-        if 'messages' not in st.session_state:
-            st.session_state.messages = []
-        
-        # Add user message to chat
-        user_msg = f"**Your Problem:** {task}"
-        st.session_state.messages.append({"role": "user", "content": user_msg})
-        
-        # Create a status placeholder
-        status_placeholder = st.empty()
-        with status_placeholder.status("🧠 Analyzing your problem and generating solution..."):
-            try:
-                # Initialize team and docker
-                team, docker = get_dsa_team_and_docker()
-                
-                # Create a placeholder for the chat
-                chat_placeholder = st.container()
-                
-                # Display chat messages
-                with chat_placeholder:
-                    for message in st.session_state.messages:
-                        with st.chat_message(message["role"]):
-                            st.markdown(message["content"])
-                
-                # Process the task
-                async def process_task():
-                    async for msg in run(team, docker, task):
-                        if isinstance(msg, str):
-                            role = "assistant"
-                            avatar = "🤖"
-                            if msg.startswith("user"):
-                                role = "user"
-                                avatar = "👤"
-                            elif msg.startswith('DSA_Problem_Solver_Agent'):
-                                avatar = "🧑‍💻"
-                            
-                            # Add to messages if not already there
-                            if msg not in [m["content"] for m in st.session_state.messages]:
-                                st.session_state.messages.append({"role": role, "content": msg})
-                                
-                                # Update the chat display
-                                with chat_placeholder:
-                                    with st.chat_message(role, avatar=avatar):
-                                        st.markdown(msg)
+        if not st.session_state.get('api_key'):
+            st.error("Please enter your Gemini API key in the sidebar")
+        else:
+            # Get the task from the input
+            task = st.session_state.get('current_problem', '')
+            if not task:
+                st.error("Please enter a problem to solve")
+            else:
+                with st.spinner('Initializing agents...'):
+                    try:
+                        # Import the team only when needed
+                        from team.dsa_team import get_dsa_team_and_docker
+                        from autogen_agentchat.base import TaskResult
                         
-                        elif isinstance(msg, TaskResult):
-                            completion_msg = f"✅ **Task Completed!** {msg.result}"
-                            st.session_state.messages.append({"role": "assistant", "content": completion_msg})
+                        # Clear previous messages
+                        if 'messages' not in st.session_state:
+                            st.session_state.messages = []
+                        
+                        # Add user message to chat
+                        user_msg = f"**Your Problem:** {task}"
+                        st.session_state.messages.append({"role": "user", "content": user_msg})
+                        
+                        # Create a status placeholder
+                        status_placeholder = st.empty()
+                        with status_placeholder.status("🧠 Analyzing your problem and generating solution..."):
+                            # Initialize the team and docker
+                            team, docker = get_dsa_team_and_docker()
+                            st.session_state.agents_initialized = True
+                            
+                            # Create a placeholder for the chat
+                            chat_placeholder = st.container()
+                            
+                            # Display chat messages
                             with chat_placeholder:
-                                with st.chat_message("assistant", avatar="✅"):
-                                    st.markdown(completion_msg)
-                
-                # Run the async task
-                asyncio.run(process_task())
-                
-            except Exception as e:
-                error_msg = f"❌ **Error:** {str(e)}"
-                st.error(error_msg)
-                if 'messages' in st.session_state:
-                    st.session_state.messages.append({"role": "error", "content": error_msg})
-            finally:
-                # Clear the status
-                status_placeholder.empty()
+                                for message in st.session_state.messages:
+                                    with st.chat_message(message["role"]):
+                                        st.markdown(message["content"])
+                            
+                            # Process the task
+                            async def process_task():
+                                async for msg in run(team, docker, task):
+                                    if isinstance(msg, str):
+                                        role = "assistant"
+                                        avatar = "🤖"
+                                        if msg.startswith("user"):
+                                            role = "user"
+                                            avatar = "👤"
+                                        elif msg.startswith('DSA_Problem_Solver_Agent'):
+                                            avatar = "🧑‍💻"
+                                        
+                                        # Add to messages if not already there
+                                        if msg not in [m["content"] for m in st.session_state.messages]:
+                                            st.session_state.messages.append({"role": role, "content": msg})
+                                            
+                                            # Update the chat display
+                                            with chat_placeholder:
+                                                with st.chat_message(role, avatar=avatar):
+                                                    st.markdown(msg)
+                                    
+                                    elif hasattr(msg, 'result'):  # Check if it's a TaskResult-like object
+                                        completion_msg = f"✅ **Task Completed!** {msg.result}"
+                                        st.session_state.messages.append({"role": "assistant", "content": completion_msg})
+                                        with chat_placeholder:
+                                            with st.chat_message("assistant", avatar="✅"):
+                                                st.markdown(completion_msg)
+                            
+                            # Run the async task
+                            asyncio.run(process_task())
+                    
+                    except Exception as e:
+                        error_msg = f"❌ **Error:** {str(e)}"
+                        st.error(error_msg)
+                        if 'messages' in st.session_state:
+                            st.session_state.messages.append({"role": "error", "content": error_msg})
+                    finally:
+                        # Clear the status
+                        if 'status_placeholder' in locals():
+                            status_placeholder.empty()
 
 # Display previous messages if any
 if 'messages' in st.session_state and st.session_state.messages:
